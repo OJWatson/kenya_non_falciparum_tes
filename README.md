@@ -40,7 +40,7 @@ The structure within analysis is as follows:
 
 ### Compendium DOI:
 
-<http://doi.org/10.5281/zenodo.4030018>
+<http://doi.org/10.5281/zenodo.4308404>
 
 The files at the URL above will generate the results as found in the
 publication. The files hosted at
