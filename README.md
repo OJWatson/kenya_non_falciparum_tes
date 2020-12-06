@@ -79,7 +79,11 @@ RStudio to begin working with the package and compendium files. We will
 endeavour to keep all package dependencies required listed in the
 DESCRIPTION. This has the advantage of allowing
 `devtools::install_dev_deps()` to install the required R packages needed
-to run the code in this repository
+to run the code in this repository. Then run `devtools::load_all(".")`
+to load the R functions in the package and you are ready to go through
+the analysis scripts. Lastly, we include the session Info
+(`sessionInfo()`) to help troubleshoot if the above steps have been
+taken and code is not working.
 
 ### Licenses
 

@@ -37,7 +37,7 @@ df_summary_species_mixed$ymax <- vapply(as.numeric(df_summary_species_mixed$n), 
 mixed_infection <- ggplot(df_summary_species_mixed[rev(order(df_summary_species_mixed$mean)),],
                           aes(x=reorder(species,mean),y=mean,fill=type,color=type)) + geom_bar(stat="identity") +
   geom_text(aes(label=paste0(round(mean,4)*100,"% (",n,"/2027)")) , color="black",hjust = -0.4) +
-  geom_errorbar(aes(ymin = ymin, ymax = ymax, x = species), color = "black", width = 0.5) +
+  geom_errorbar(aes(ymin = ymin, ymax = ymax, x = species), color = "black", width = 0.25) +
   ylab("Percentage Infections") + xlab("Infection Composition") +
   theme_bw() + our_theme + coord_flip() +  scale_y_continuous(labels = scales::percent, limits = c(0,1)) +
   scale_color_brewer(palette = "Paired",name="Infection Type",) +
