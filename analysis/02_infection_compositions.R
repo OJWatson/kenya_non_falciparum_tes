@@ -152,8 +152,12 @@ grp_62_nb <- queuer::qlapply(pl_list,obj=obj,
 # Grab results from the cluster
 l <- lapply(grp_62_pois$tasks,function(x){x$result()})
 ln <- lapply(grp_62_nb$tasks,function(x){x$result()})
-save(l,ln,file="analysis/data/derived/complete_icer.rda")
 
+# remove plot for memory reasons
+l <- lapply(l, function(x) {x$plot <- NULL; return(x)})
+ln <- lapply(ln, function(x) {x$plot <- NULL; return(x)})
+
+save(l,ln,file="analysis/data/derived/complete_icer.rda")
 
 ###
 # Run the analysis for the complete independent and inteference models
@@ -220,7 +224,7 @@ write.csv(full[,c("Model", "Dist", "AICc", "AIC", "DeltaAIC", "Params", "LogLik"
 best <- full[c(1,which(full$AICc==min(full$AICc[full$Dist=="Negative Binomial"])),
                which(full$Model %in% c("Independent","Complete Interference"))),]
 best <- reorder_aic(best, 2027)
-best_mods <-  list(l[[2]],ln[[2]],
+best_mods <-  list(l[[2]],ln[[2]],  # lowest AIC model
                    spec_res_poisson,
                    spec_res_pois_3p_interference,
                    spec_res,
@@ -254,8 +258,8 @@ a <- icer:::coinf_plot(reps = 50000,probs = spec_res_poisson$params$multinom ,
                 density = FALSE)
 
 b <- icer:::coinf_plot(reps = 50000,probs = l[[2]]$params$multinom ,
-                levels = names(l[[2]]$params$multinom),
-                total = sum(l[[2]]$data),
+                levels = names(l[[2]]$params$multinom),  # lowest AIC model
+                total = sum(l[[2]]$data),  # lowest AIC model
                 plot = TRUE, real = spec_res$data,
                 density = FALSE)
 

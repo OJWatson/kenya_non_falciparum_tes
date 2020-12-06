@@ -18,7 +18,7 @@ colnames(tb) <- names(spec_res_poisson$params$multinom)
 tb[,14] <- 0
 
 # what are the expected ratios
-expected <- round(outer(rowSums(tb),l[[2]]$params$multinom ))
+expected <- round(outer(rowSums(tb),l[[2]]$params$multinom ))  # lowest AIC model
 tbsp <- as.table(as.numeric(tb))
 p <- as.numeric(expected)/sum(expected)
 names(p) <- names(tbsp)
@@ -60,13 +60,13 @@ colnames(tbs) <- tolower(colnames(tbs))
 colnames(tbs)[5] <- "pf/pm/poc/pow"
 colnames(tbs)[8] <- "pf/poc/pow"
 colnames(tbs)[14] <- "poc/pow"
-huh <- match(names(l[[2]]$params$multinom),colnames(tbs))
+huh <- match(names(l[[2]]$params$multinom),colnames(tbs)) # lowest AIC model
 tbs <- tbs[,huh]
-colnames(tbs) <- names(l[[2]]$params$multinom)
+colnames(tbs) <- names(l[[2]]$params$multinom)  # lowest AIC model
 tbs[,14] <- 0
 
 # expected diffs
-expected <- round(outer(rowSums(tbs),l[[2]]$params$multinom ))
+expected <- round(outer(rowSums(tbs),l[[2]]$params$multinom ))  # lowest AIC model
 names(expected) <- month.name
 tbsp <- as.table(as.numeric(tbs))
 p <- as.numeric(expected)/sum(expected)
