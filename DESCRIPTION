@@ -1,0 +1,39 @@
+Package: nfkenya
+Type: Package
+Title: Analysis of non-falciparum in Kenya
+Version: 0.1.0
+Authors@R: c(
+  person("OJ", "Watson", email = "o.watson15@imperial.ac.uk", role = c("aut", "cre"))
+  )
+Description: Code repository for analysis into non-falciparum malaria in Kenya
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    data.table,
+    boot,
+    lme4,
+    broom.mixed,
+    stringr,
+    here,
+    cowplot,
+    ggplot2,
+    Hmisc,
+    scales,
+    icer,
+    lubridate,
+    reshape2,
+    stargazer,
+    sjPlot,
+    combinat,
+    ggrepel,
+    purrr,
+    metR,
+    viridis,
+    UpSetR
+Suggests:
+    devtools
+Remotes:
+    Jonocarroll/UpSetR
+    OJWatson/icer
+    
