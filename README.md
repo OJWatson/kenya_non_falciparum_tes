@@ -13,9 +13,9 @@ the results.
 
 ### Installation
 
-    git clone https://github.com/OJWatson/kenya_non_falciparum.git
-    cd kenya_non_falciparum
-    open kenya_non_falciparum.Rproj
+    git clone https://github.com/OJWatson/kenya_non_falciparum_tes.git
+    cd kenya_non_falciparum_tes
+    open kenya_non_falciparum_tes.Rproj
     devtools::install_deps()
 
 ### Overview
@@ -50,7 +50,7 @@ and may have changed since the report was published
 ### Overview of contents
 
 This repository is our research compendium for our analysis of
-<https://github.com/OJWatson/kenya_non_falciparum>. The compendium
+<https://github.com/OJWatson/kenya_non_falciparum_tes>. The compendium
 contains all data, code, and text associated with the publication. The
 `R` files in the `analysis` directory contain details of how all the
 analyses reported in the paper were conducted, as well as instructions
@@ -71,10 +71,10 @@ browsing, use this line at the shell prompt (assuming you have Git
 installed on your computer):
 
 ``` r
-git clone https://github.com/OJWatson/kenya_non_falciparum.git
+git clone https://github.com/OJWatson/kenya_non_falciparum_tes.git
 ```
 
-Once the download is complete, open the `kenya_non_falciparum.Rproj` in
+Once the download is complete, open the `kenya_non_falciparum_tes.Rproj` in
 RStudio to begin working with the package and compendium files. We will
 endeavour to keep all package dependencies required listed in the
 DESCRIPTION. This has the advantage of allowing
