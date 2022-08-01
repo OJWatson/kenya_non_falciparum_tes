@@ -97,22 +97,22 @@ grp_62_pois <- obj$lapply(pl_list,
                                  icer::cooccurence_test(data = x$data,  boot_iter = 50000, poisson=TRUE,
                                                   plot = TRUE,size =100,
                                                   quantiles = c(0.025,0.975),
-                                                  lower = 0.01,upper=4,
+                                                  lower = 0.01,upper=10,
                                                   density_func = icer:::interference,
                                                   max_moi = 25,x$x)
                                },
-                               name = "hoseah_62_pois_tes",overwrite = TRUE)
+                               name = "hoseah_62_pois_nftes",overwrite = TRUE)
 
 grp_62_nb <- obj$lapply(pl_list,
                         FUN=function(x){
                           icer::cooccurence_test(data = x$data,  boot_iter = 50000, poisson=FALSE,
                                            plot = TRUE,size =100,
                                            quantiles = c(0.025,0.975),
-                                           lower = 0.01,upper=4,
+                                           lower = 0.01,upper=10,
                                            density_func = icer:::interference,
                                            max_moi = 25,x$x)
                         },
-                        name = "hoseah_62_nb_tes",overwrite = TRUE)
+                        name = "hoseah_62_nb_nftes",overwrite = TRUE)
 
 ###
 
@@ -189,5 +189,5 @@ ggb <- icer:::dens_plot(x = icers$indpnt_pois$plot$vals,
                         density = FALSE)
 
 
-gg <- cowplot::plot_grid(gga, ggb, ncol = 1, labels ="auto")
+gg <- cowplot::plot_grid(ggb, gga, ncol = 1, labels ="auto")
 save_figs("icer_plots", gg, width = 10, height = 10)
