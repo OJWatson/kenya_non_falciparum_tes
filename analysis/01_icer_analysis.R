@@ -175,6 +175,7 @@ if(full$Dist[1] == "Poisson"){
   best_fit <- ln[[as.numeric(full$run[1])]]
 }
 saveRDS(best_fit, "analysis/data/derived/best_icer.rds")
+best_fit <- readRDS("analysis/data/derived/best_icer.rds")
 
 # comparison between best and independent
 

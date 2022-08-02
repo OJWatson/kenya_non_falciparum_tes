@@ -44,7 +44,7 @@ cryptic_ids <- daily %>% group_by(subjectid) %>%
 
 daily <- daily %>%
   filter(infx != "Missing") %>%
-  filter(subjectid %in% names(which(table(subjectid) == 7))) %>%
+  #filter(subjectid %in% names(which(table(subjectid) == 7))) %>%
   filter(infx != "Uninfected") %>%
   group_by(subjectid) %>%
   mutate(n = n()) %>%
@@ -149,6 +149,7 @@ repeat_plot <- cowplot::plot_grid(
 )
 
 save_figs("repeat_infections", repeat_plot, width = 16, height = 20)
+save_figs("repeat_infection_cryptic_pf", repeat_infection_cryptic_pf_gg, width = 9, height = 6)
 save_figs("repeat_infection_act", repeat_infection_act_gg + xlab("Days after treatment"), width = 9, height = 10)
 
 repeat_infection_cryptic_act_gg$layers[[1]]$aes_params$size <- 5

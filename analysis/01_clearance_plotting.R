@@ -112,15 +112,13 @@ save_figs("clearance_plot", clearance_plot, width = 12,height = 4.5)
 slope_glm <- glm(slope_half_life  ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
 pc50_glm <- glm(pc50  ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
 pc99_glm <- glm(pc99 ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
-acpr28_glm <- glm(day28=="ACPR" ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
-acpr42_glm <- glm(day42=="ACPR" ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
 
 covariate_labels <- c("Haemoglobin Levels g/dl", "Age (years)", "Weight (kg)",
                       "Gender = Male", "ACT = ASMQ", "ACT = DHA-PPQ", "Pf single infection",
                       "Parasitaemia (p/uL)")
 
 writeLines(
-  stargazer::stargazer(list(slope_glm, pc50_glm, pc99_glm, acpr28_glm, acpr42_glm),
+  stargazer::stargazer(list(slope_glm, pc50_glm, pc99_glm),
                        report=('vc*p'),
                        keep.stat = c("n","ll"),
                        column.labels = c("PC Slope Half Life",
@@ -182,7 +180,7 @@ gg_effs <- ggplot(td, aes(estimate, term, color = p.value<0.05)) +
         axis.title.x = element_text(hjust = 0.4)) +
   scale_x_continuous(breaks = c(-0.5, 0, 0.5), limits = c(-0.75,1.51))
 
-# Add OR desc to right
+# Add effect size desc to right
 gg_effs <- gg_effs + geom_curve(data = data.frame(x = 0.5, y = nrow(td)-0.25,
                                   xend = 1.5, yend = nrow(td)-0.25),
                 mapping = aes(x = x,y = y, xend = xend, yend = yend),
@@ -228,12 +226,39 @@ cryptic_ids <- daily %>% group_by(subjectid) %>%
   pull(subjectid)
 
 # identify which were pf only at day 0
-daily <- daily %>% filter(!(infx %in% c("Missing"))) %>%
+daily <- daily %>% filter(day == 0 & !(infx %in% c("Uninfected", "Missing"))) %>%
   mutate(pf_only = infx == "Pf")
 
-# focussing on those that aren't cryptic infections
+acpr28_glm <- glm(day28=="ACPR" ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia,
+                  data = daily %>% filter(!subjectid %in% cryptic_ids), family = "binomial")
+acpr42_glm <- glm(day42=="ACPR" ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia,
+                  data = daily %>% filter(!subjectid %in% cryptic_ids), family = "binomial")
+
+covariate_labels <- c("Haemoglobin Levels g/dl", "Age (years)", "Weight (kg)",
+                      "Gender = Male", "ACT = ASMQ", "ACT = DHA-PPQ", "Pf single infection",
+                      "Parasitaemia (p/uL)")
+
+writeLines(
+  stargazer::stargazer(list(acpr28_glm, acpr42_glm),
+                       report=('vc*p'),
+                       keep.stat = c("n","ll"),
+                       column.labels = c("ACPR Day 28",
+                                         "ACPR Day 42"),
+                       column.sep.width = "90pt",
+                       digits = 4,
+                       dep.var.labels.include = FALSE,
+                       type="html",
+                       covariate.labels = covariate_labels,
+                       title = "Generalised Linear Modelling of Parasite Clearance and Late Parasitological Failure",
+                       omit = "Constant", dep.var.caption = ""),
+  cp_path("analysis/tables/ACPR.html")
+)
+
+
+# focussing on those that aren't cryptic infections as we know these are not recrudescences
+daily <- readRDS(cp_path("analysis/data/derived/daily_data.rds"))
 reinfection_data <- daily %>%
-  #filter(!subjectid %in% cryptic_ids) %>%
+  filter(!subjectid %in% cryptic_ids) %>%
   group_by(subjectid) %>%
   mutate(all_inf = (sum(infx == "Uninfected") == n())) %>%
   filter(!all_inf) %>%
@@ -264,6 +289,7 @@ pos_test <- function(x){any(as.character(x) == "POS", na.rm = TRUE)}
 retreated <- which(apply(slide[slide$subjectid %in% unique(reinfection_data$subjectid),3:8], 1, pos_test))
 retreated <- slide$subjectid[which(slide$subjectid %in% unique(reinfection_data$subjectid))][retreated]
 
+# remove those that had been retreated
 reinfection_data <- reinfection_data %>% filter(!(subjectid %in% retreated))
 
 # create plot of clearance curvs with logistic decay
