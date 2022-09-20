@@ -40,11 +40,9 @@ The structure within analysis is as follows:
 
 ### Compendium DOI:
 
-<http://doi.org/10.5281/zenodo.4308404>
-
 The files at the URL above will generate the results as found in the
 publication. The files hosted at
-github.com/OJWatson/kenya\_non\_falciparum are the development versions
+github.com/OJWatson/kenya\_non\_falciparum\_test are the development versions
 and may have changed since the report was published
 
 ### Overview of contents
