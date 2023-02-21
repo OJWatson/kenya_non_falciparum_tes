@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">nfteskenya</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.1</span>
       </span>
     </div>
 
@@ -93,7 +93,8 @@
 <div class="section level3">
 <h3 id="compendium-doi">Compendium DOI:<a class="anchor" aria-label="anchor" href="#compendium-doi"></a>
 </h3>
-<p>The files at the URL above will generate the results as found in the publication. The files hosted at github.com/OJWatson/kenya_non_falciparum_test are the development versions and may have changed since the report was published</p>
+<p><a href="http://doi.org/xx.xxxx/zenodo.xxxxxxx" class="external-link uri">http://doi.org/xx.xxxx/zenodo.xxxxxxx</a></p>
+<p>The files at the URL above will generate the results as found in the publication. The files hosted at github.com/OJWatson/kenya_non_falciparum_tes are the development versions and may have changed since the report was published</p>
 </div>
 <div class="section level3">
 <h3 id="overview-of-contents">Overview of contents<a class="anchor" aria-label="anchor" href="#overview-of-contents"></a>
@@ -103,15 +104,16 @@
 <div class="section level3">
 <h3 id="the-r-package">The R package<a class="anchor" aria-label="anchor" href="#the-r-package"></a>
 </h3>
-<p>This repository is organized as an R package. There are only a few R functions exported in this package - the majority of the R code is in the analysis directory. The R package structure is here to help manage dependencies, to take advantage of continuous integration, and so we can keep file and data management simple.</p>
+<p>This repository is organized as an R package. There are no/negligable R functions exported in this package - the majority of the R code is in the analysis and src directory. The R package structure is here to help manage dependencies, to take advantage of continuous integration, and so we can keep file and data management simple.</p>
 <p>To download the package source as you see it on GitHub, for offline browsing, use this line at the shell prompt (assuming you have Git installed on your computer):</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>git clone https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>OJWatson<span class="op">/</span>kenya_non_falciparum_tes.git</span></code></pre></div>
-<p>Once the download is complete, open the <code>kenya_non_falciparum_tes.Rproj</code> in RStudio to begin working with the package and compendium files. We will endeavour to keep all package dependencies required listed in the DESCRIPTION. This has the advantage of allowing <code><a href="https://devtools.r-lib.org/reference/install_deps.html" class="external-link">devtools::install_dev_deps()</a></code> to install the required R packages needed to run the code in this repository. Then run <code>devtools::load_all(".")</code> to load the R functions in the package and you are ready to go through the analysis scripts. Lastly, we include the session Info (<code><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo()</a></code>) to help troubleshoot if the above steps have been taken and code is not working.</p>
+<p>Once the download is complete, open the <code>kenya_non_falciparum_tes.Rproj</code> in RStudio to begin working with the package and compendium files. We will endeavour to keep all package dependencies required listed in the DESCRIPTION.</p>
+<p>In addition we use <code>renv</code> to track package dependencies for reproducibility. Please use <code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore</a></code> to restore the state of the project and see <a href="https://rstudio.github.io/renv/articles/renv.html" class="external-link uri">https://rstudio.github.io/renv/articles/renv.html</a> for more information.</p>
 </div>
 <div class="section level3">
 <h3 id="licenses">Licenses<a class="anchor" aria-label="anchor" href="#licenses"></a>
 </h3>
-<p>Code: <a href="http://opensource.org/licenses/MIT" class="external-link">MIT</a> year: 2020, copyright holder: OJ Watson</p>
+<p>Code: <a href="http://opensource.org/licenses/MIT" class="external-link">MIT</a> year: 2023, copyright holder: OJ Watson</p>
 <p>Data: <a href="http://creativecommons.org/publicdomain/zero/1.0/" class="external-link">CC-0</a> attribution requested in reuse</p>
 </div>
 </div>
@@ -146,7 +148,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R%3E%3D-4.0.3-brightgreen.svg" alt="minimal R version"></a></li>
+<li><a href="https://cran.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R%3E%3D-4.2.2-brightgreen.svg" alt="minimal R version"></a></li>
 <li><a href="http://choosealicense.com/licenses/mit/" class="external-link"><img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="Licence"></a></li>
 </ul>
 </div>
@@ -162,7 +164,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
