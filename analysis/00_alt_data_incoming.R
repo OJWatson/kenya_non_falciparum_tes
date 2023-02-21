@@ -1,4 +1,5 @@
 library(tidyverse)
+devtools::load_all()
 
 df2 <- readxl::read_xlsx(cp_path("analysis/data/raw/vivo_scheduled_visits.xlsx"), sheet = 1)
 df2 <- df2 %>%

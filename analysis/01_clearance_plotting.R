@@ -1,4 +1,5 @@
 library(tidyverse)
+devtools::load_all()
 
 ### -------------------------------------
 ### Parasite Clearance Curves
@@ -25,27 +26,9 @@ binomial_smooth <- function(...) {
   geom_smooth(method = "glm", method.args = list(family = "quasibinomial"),...)
 }
 
-# Incorrect transformation in pseudo log scale
-# clearance_gg <- arm_df2 %>%
-#   ggplot(aes(time, para, group = subjectid, color = arm)) +
-#   geom_line(alpha = 0.1) +
-#   binomial_smooth(aes(time, para, color = arm, fill = arm),
-#                   inherit.aes = FALSE, lwd = 1, se = TRUE, span = 0.2, alpha = 0.3, level = 0.95, fullrange = TRUE) +
-#   binomial_smooth(aes(time, para, color = arm, fill = arm),
-#                   inherit.aes = FALSE, lwd = 1, se = FALSE, span = 0.9, alpha = 0.3, level = 0.95, fullrange = TRUE) +
-#   scale_y_continuous(labels = scales::percent,
-#                      #limits = c(0,1),
-#                      trans=scales::pseudo_log_trans(sigma = 0.0001, base = exp(10)),
-#                      breaks = c(0, 0.001,0.01,0.1,1)) +
-#   ylab("Parasitaemia Relative to Max Parasitaemia (%)") +
-#   xlab("Hours since treatment") +
-#   scale_color_viridis_d(name = "ACT", end = 1) +
-#   scale_fill_viridis_d(name = "ACT", end = 1) +
-#   theme_bw()
-
 clearance_gg <- arm_df2 %>%
   mutate(para = replace(para, para < 1e-4, 1e-4)) %>%
-  ggplot(aes(time, para, p = para, color = arm)) +
+  ggplot(aes(time, para,  p = para, color = arm)) +
   geom_line(alpha = 0.1, aes(group = subjectid)) +
   geom_smooth(method="glm",se=FALSE,  method.args=list(family="binomial"),
               formula = cbind(p) ~ x,
@@ -84,23 +67,6 @@ clearance_gg2 <- arm_df2 %>%
   scale_fill_viridis_d(name = "ACT", end = 1) +
   theme_bw()
 
-# Incorrect transformation in pseudo log scale
-# clearance_gg2 <- arm_df2 %>%
-#   ggplot(aes(time, para, group = subjectid, color = arm, linetype = pf_only)) +
-#   geom_line(alpha = 0.1) +
-#   binomial_smooth(aes(time, para, color = arm, fill = arm, linetype = pf_only),
-#                   inherit.aes = FALSE, lwd = 1, se = FALSE, span = 0.9, alpha = 0.3, level = 0.95) +
-#   scale_y_continuous(labels = scales::percent,
-#                      #limits = c(0,1),
-#                      trans=scales::pseudo_log_trans(sigma = 0.0001, base = exp(10)),
-#                      breaks = c(0, 0.001,0.01,0.1,1)) +
-#   ylab("Parasitaemia Relative to Max Parasitaemia (%)") +
-#   xlab("Hours since treatment") +
-#   scale_color_viridis_d(name = "ACT", end = 1) +
-#   scale_fill_viridis_d(name = "ACT", end = 1) +
-#   scale_linetype(name = "Single Pf Infection \nat Hour 0") +
-#   guides(linetype = guide_legend(override.aes = list(color = "black" ) ) ) +
-#   theme_bw()
 
 clearance_plot <- cowplot::plot_grid(clearance_gg, clearance_gg2, labels = "auto")
 save_figs("clearance_plot", clearance_plot, width = 12,height = 4.5)
@@ -109,13 +75,13 @@ save_figs("clearance_plot", clearance_plot, width = 12,height = 4.5)
 ### Fit models to explain parasite clearance by drug, pf and individual covariates
 ### -------------------------------------
 
-slope_glm <- glm(slope_half_life  ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
-pc50_glm <- glm(pc50  ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
-pc99_glm <- glm(pc99 ~  hgb + age + weight + gender + arm + pf_only + gmeanpfemia, data = daily)
+slope_glm <- glm(slope_half_life  ~  hgb + age + weight + gender + arm + pf_only + log(gmeanpfemia), data = daily)
+pc50_glm <- glm(pc50  ~  hgb + age + weight + gender + arm + pf_only + log(gmeanpfemia), data = daily)
+pc99_glm <- glm(pc99 ~  hgb + age + weight + gender + arm + pf_only + log(gmeanpfemia), data = daily)
 
 covariate_labels <- c("Haemoglobin Levels g/dl", "Age (years)", "Weight (kg)",
                       "Gender = Male", "ACT = ASMQ", "ACT = DHA-PPQ", "Pf single infection",
-                      "Parasitaemia (p/uL)")
+                      "Log Parasitaemia (p/uL)")
 
 writeLines(
   stargazer::stargazer(list(slope_glm, pc50_glm, pc99_glm),
@@ -136,6 +102,23 @@ writeLines(
   cp_path("analysis/tables/parasite_clearance_failure.html")
 )
 
+star_text <- stargazer::stargazer(list(slope_glm, pc50_glm, pc99_glm),
+                             report=('vc*p'),
+                             keep.stat = c("n","ll"),
+                             column.labels = c("PC Slope Half Life",
+                                               "PC 50% Clearance",
+                                               "PC 99% Clearance",
+                                               "ACPR Day 28",
+                                               "ACPR Day 42"),
+                             column.sep.width = "90pt",
+                             digits = 4,
+                             dep.var.labels.include = FALSE,
+                             type="text",
+                             covariate.labels = covariate_labels,
+                             title = "Generalised Linear Modelling of Parasite Clearance and Late Parasitological Failure",
+                             omit = "Constant", dep.var.caption = "")
+write_stargazer(star_text, cp_path("analysis/tables/parasite_clearance_failure.csv"))
+
 ### -------------------------------------
 ### Effect sizes of covariates on slope half life
 ### -------------------------------------
@@ -144,7 +127,7 @@ writeLines(
 td <- broom.mixed::tidy(slope_glm, conf.int=TRUE)
 
 # label our covariates more clearly
-td$term[-1] <- covariate.labels
+td$term[-1] <- covariate_labels
 
 # format the labels and title
 td$label <- paste0(round(td$estimate,2), " [",
@@ -157,7 +140,7 @@ td$term[nrow(td)] <- ""
 td$label[nrow(td)] <- "Effect Size [95% CI]"
 
 # order covariates sensible order
-td <- td[c(2,3,4,1,5:7, 8),]
+td <- td[c(2,3,4,1,5:7, 8, 9),]
 td$term <- factor(td$term, levels = td$term)
 
 # create effect size plot
@@ -181,7 +164,7 @@ gg_effs <- ggplot(td, aes(estimate, term, color = p.value<0.05)) +
   scale_x_continuous(breaks = c(-0.5, 0, 0.5), limits = c(-0.75,1.51))
 
 # Add effect size desc to right
-gg_effs <- gg_effs + geom_curve(data = data.frame(x = 0.5, y = nrow(td)-0.25,
+gg_effs <- gg_effs + geom_segment(data = data.frame(x = 0.5, y = nrow(td)-0.25,
                                   xend = 1.5, yend = nrow(td)-0.25),
                 mapping = aes(x = x,y = y, xend = xend, yend = yend),
                 angle = 0L, arrow = arrow(30L, unit(0L, "inches"), "last", "closed"),
@@ -189,7 +172,7 @@ gg_effs <- gg_effs + geom_curve(data = data.frame(x = 0.5, y = nrow(td)-0.25,
 
 save_figs("slope_effect_sizes", gg_effs, height = 4, width = 6)
 
-
+# HGB Demo now updated in revision plots
 hgb_demo <- ggplot(daily, aes(hgb, slope_half_life, color = arm, fill = arm)) +
   geom_point() +
   geom_smooth(method = "lm") +
@@ -254,6 +237,21 @@ writeLines(
   cp_path("analysis/tables/ACPR.html")
 )
 
+star_text <- stargazer::stargazer(list(acpr28_glm, acpr42_glm),
+                    report=('vc*p'),
+                    keep.stat = c("n","ll"),
+                    column.labels = c("ACPR Day 28",
+                                      "ACPR Day 42"),
+                    column.sep.width = "90pt",
+                    digits = 4,
+                    dep.var.labels.include = FALSE,
+                    type="text",
+                    covariate.labels = covariate_labels,
+                    title = "Generalised Linear Modelling of Parasite Clearance and Late Parasitological Failure",
+                    omit = "Constant", dep.var.caption = "")
+write_stargazer(star_text, cp_path("analysis/tables/ACPR.csv"))
+write_stargazer(star_text, cp_path("analysis/tables/supp_table_3.csv"))
+
 
 # focussing on those that aren't cryptic infections as we know these are not recrudescences
 daily <- readRDS(cp_path("analysis/data/derived/daily_data.rds"))
@@ -261,6 +259,7 @@ reinfection_data <- daily %>%
   filter(!subjectid %in% cryptic_ids) %>%
   group_by(subjectid) %>%
   mutate(all_inf = (sum(infx == "Uninfected") == n())) %>%
+  filter(infx != "Missing") %>%
   filter(!all_inf) %>%
   filter(subjectid %in% names(which(table(subjectid) == 7))) %>%
   group_by(subjectid, arm) %>%
@@ -297,14 +296,17 @@ binomial_smooth <- function(...) {
   geom_smooth(method = "glm", method.args = list(family = "binomial"),...)
 }
 
-reinf_summary <- reinfection_data %>% filter(day <= 42) %>%
+reinf_summary <- reinfection_data %>%
+  filter(day <= 42) %>%
 group_by(day, arm) %>%
   summarise(y = Hmisc::binconf(sum(reinfected), n())[1],
             ymin = Hmisc::binconf(sum(reinfected), n())[2],
             ymax = Hmisc::binconf(sum(reinfected), n())[3])
 
-reinfection_gg <- ggplot(reinfection_data %>% filter(day <= 42),
-       aes(day, as.integer(reinfected), color = arm, weight = weight, fill = arm)) +
+reinfection_gg <-
+  reinfection_data %>%
+  filter(day <= 42) %>%
+  ggplot(aes(day, as.integer(reinfected), color = arm, weight = weight, fill = arm)) +
   #geom_point() +
   binomial_smooth(se=TRUE) +
   binomial_smooth(se=FALSE) +
@@ -313,9 +315,10 @@ reinfection_gg <- ggplot(reinfection_data %>% filter(day <= 42),
   ylab("% Reinfected")+
   scale_color_viridis_d(name = "ACT", end = 1) +
   scale_fill_viridis_d(name = "ACT", end = 1) +
-  geom_errorbar(aes(day, y, ymin = ymin, ymax = ymax, color = arm), reinf_summary, inherit.aes = FALSE, width = 1, size = 1, alpha = 0.75) +
-  geom_point(aes(day, y, ymin = ymin, ymax = ymax), color = "black", reinf_summary, inherit.aes = FALSE, size = 3) +
-  geom_point(aes(day, y, ymin = ymin, ymax = ymax, color = arm), reinf_summary, inherit.aes = FALSE, size = 2) +
+  geom_errorbar(aes(day, y, ymin = ymin, ymax = ymax, color = arm), reinf_summary, inherit.aes = FALSE, width = 1, linewidth = 1, alpha = 0.75) +
+  geom_point(aes(day, y), color = "black", reinf_summary, inherit.aes = FALSE, size = 3) +
+  geom_point(aes(day, y, color = arm), reinf_summary, inherit.aes = FALSE, size = 2) +
   scale_y_continuous(labels = scales::percent)
+reinfection_gg
 
 save_figs("reinfection", reinfection_gg, height = 4, width = 6)

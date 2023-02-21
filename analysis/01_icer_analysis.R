@@ -176,6 +176,7 @@ if(full$Dist[1] == "Poisson"){
 }
 saveRDS(best_fit, "analysis/data/derived/best_icer.rds")
 best_fit <- readRDS("analysis/data/derived/best_icer.rds")
+icers <- readRDS(cp_path("analysis/data/derived/icer.rds"))
 
 # comparison between best and independent
 
