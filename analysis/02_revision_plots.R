@@ -250,19 +250,23 @@ reinfection_data_surv <- reinfection_data_surv %>%
   mutate(status = replace(status, dayreinf == 49, 0))
 
 surv_gg <- ggsurvfit::survfit2(survival::Surv(proph_duration, status) ~ arm, data = reinfection_data_surv) %>%
-  ggsurvfit::ggsurvfit(type = "risk", size = 1.5) +
+  ggsurvfit::ggsurvfit(type = "survival", size = 1.5) +
   labs(
     x = "Days",
     y = "Overall survival probability"
   ) +
   ggsurvfit::add_confidence_interval( size = 1.5) +
   ggsurvfit::add_confidence_interval(type = "lines", size = 1) +
+  geom_point(color = "black", size = 3) +
+  geom_point(size = 2) +
+  #geom_errorbar(width =1, size = 1) +
   scale_color_viridis_d(name = "ACT:", end = 0.8) +
   scale_fill_viridis_d(name = "ACT:", end = 0.8) +
   scale_y_continuous(labels = scales::percent) +
-  ylab("% Reinfected") +
+  ylab("% Uninfected") +
   xlab("Days Since First Clearing All Infections") +
-  theme(legend.position = c(0.125,0.875), legend.background = element_rect(color = "black"))
+  theme(legend.position = "top", legend.background = element_rect(color = "white"))
+
 
 surv_table <- survival::coxph(
   survival::Surv(proph_duration, status) ~ ACT,
@@ -273,7 +277,7 @@ surv_fig <- cowplot::plot_grid(
   surv_gg, NA, as_ggplot(surv_table),
   ncol = 4, rel_widths = c(1,0.05,0.5,0.025),
   labels = c("a", "", "b", "")) +
-  theme(plot.background = element_rect(fill = "white"))
+  theme(plot.background = element_rect(fill = "white", color = "white"))
 save_figs("surv_fig", surv_fig, height = 6, width = 10)
 
 # ------------------------------------------------------------------------------
@@ -318,13 +322,13 @@ hgb_a <- ggplot(daily, aes(hgb, slope_half_life, color = arm, fill = arm)) +
   scale_fill_viridis_d(name = "ACT", end = 1)
 
 
-hgb_b <- ggplot(daily, aes(hgb, gmeanpfemia, color = arm, fill = arm)) +
+hgb_b <- ggplot(daily, aes(hgb, log(gmeanpfemia), color = arm, fill = arm)) +
   geom_point() +
   geom_smooth(method = "lm") +
   geom_smooth(method = "lm", se = FALSE) +
   theme_bw() +
   xlab("Haemoglobin Levels on Enrollment") +
-  ylab("Parasitaemia") +
+  ylab("Log Parasitaemia") +
   scale_color_viridis_d(name = "ACT", end = 1) +
   scale_fill_viridis_d(name = "ACT", end = 1)
 
